@@ -1,24 +1,46 @@
+import { useDashboardStats } from '../hooks/useDashboardStats';
+import { Loader2 } from 'lucide-react';
+
 export default function DashboardOverview() {
+  const { stats, loading } = useDashboardStats();
+
+  // Format currency
+  const formatCurrency = (val: number) => 
+    new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', maximumFractionDigits: 0 }).format(val);
+
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm">
-            <h3 className="text-neutral-500 text-sm font-medium">Total Revenue</h3>
-            <p className="text-3xl font-medium mt-2">Rs. 0</p>
+      
+      {loading && stats.grossSales === 0 ? (
+        <div className="flex justify-center items-center h-32">
+          <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">
+            <h3 className="text-neutral-500 text-sm font-medium">Gross Sales</h3>
+            <p className="text-3xl font-medium mt-2">{formatCurrency(stats.grossSales)}</p>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm">
-            <h3 className="text-neutral-500 text-sm font-medium">Active Orders</h3>
-            <p className="text-3xl font-medium mt-2">0</p>
+          
+          <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">
+            <h3 className="text-neutral-500 text-sm font-medium">Net Profit</h3>
+            <p className="text-3xl font-medium mt-2 text-green-600">{formatCurrency(stats.netProfit)}</p>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm">
-            <h3 className="text-neutral-500 text-sm font-medium">Products</h3>
-            <p className="text-3xl font-medium mt-2">0</p>
+          
+          <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">
+            <h3 className="text-neutral-500 text-sm font-medium">Pending COD</h3>
+            <p className="text-3xl font-medium mt-2 text-amber-600">{formatCurrency(stats.pendingCod)}</p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">
+            <h3 className="text-neutral-500 text-sm font-medium">Return Rate</h3>
+            <p className="text-3xl font-medium mt-2 text-red-500">{stats.returnRate.toFixed(1)}%</p>
           </div>
         </div>
-        
-        <div className="bg-white rounded-xl border border-neutral-200 shadow-sm min-h-[400px] flex items-center justify-center text-neutral-400">
-          Chart / Data Grid Area
-        </div>
+      )}
+      
+      <div className="bg-white rounded-xl border border-neutral-200 shadow-sm min-h-[400px] flex items-center justify-center text-neutral-400">
+        Chart / Data Grid Area
       </div>
     </div>
   );
