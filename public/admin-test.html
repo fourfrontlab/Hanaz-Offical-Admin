@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Test - Hanaz Official</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 20px; max-width: 500px; margin: 0 auto; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: 500; }
+    input { width: 100%; padding: 8px; box-sizing: border-box; }
+    button { padding: 10px 15px; background: #000; color: #fff; border: none; cursor: pointer; }
+    .hidden { display: none; }
+    #status { margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <h1>Admin Proof of Concept</h1>
+  <div id="status">Status: Not Logged In</div>
+
+  <!-- Login Form -->
+  <div id="loginSection">
+    <h2>Login</h2>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="email" value="admin@hanazofficial.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password">
+    </div>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- Edit Price Form -->
+  <div id="editSection" class="hidden">
+    <h2>Edit Product Price</h2>
+    <div class="form-group">
+      <label>Product ID (UUID)</label>
+      <input type="text" id="productId" placeholder="e.g. 123e4567-e89b-12d3-a456-426614174000">
+    </div>
+    <div class="form-group">
+      <label>New Sale Price (Rs.)</label>
+      <input type="number" id="newPrice" placeholder="e.g. 1500">
+    </div>
+    <button onclick="updatePrice()">Update Price</button>
+  </div>
+
+  <script>
+    // Initialize Supabase (Using the credentials provided)
+    const SUPABASE_URL = 'https://xipbscxjsfzgkslckpjk.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_l4rLObIIdRuHilUY7qQI1g_MF0Bb_1-';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        document.getElementById('status').innerText = 'Error: ' + error.message;
+      } else {
+        document.getElementById('status').innerText = 'Logged in as ' + data.user.email;
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('editSection').classList.remove('hidden');
+      }
+    }
+
+    async function updatePrice() {
+      const productId = document.getElementById('productId').value;
+      const newPrice = document.getElementById('newPrice').value;
+
+      if (!productId || !newPrice) {
+        alert("Please fill in both fields");
+        return;
+      }
+
+      document.getElementById('status').innerText = 'Updating...';
+
+      const { data, error } = await supabase
+        .from('products')
+        .update({ sale_price: parseFloat(newPrice) })
+        .eq('id', productId)
+        .select();
+
+      if (error) {
+        document.getElementById('status').innerText = 'Error updating price: ' + error.message;
+      } else {
+        document.getElementById('status').innerText = 'Success! Price updated to Rs. ' + newPrice;
+      }
+    }
+
+    // Check session on load
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        document.getElementById('status').innerText = 'Logged in as ' + session.user.email;
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('editSection').classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
