@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useOrders } from '../hooks/useOrders';
 import StatusBadge from '../components/StatusBadge';
-import { Loader2, MoreVertical, Search, Edit2, Truck } from 'lucide-react';
+import { Loader2, Search, Edit2, Truck } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const STATUS_OPTIONS = [

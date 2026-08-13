@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Save, Loader2 } from 'lucide-react';
-import { Product } from '../hooks/useProducts';
+import type { Product } from '../hooks/useProducts';
 import DragDropImageUploader from './DragDropImageUploader';
 import toast from 'react-hot-toast';
 
