@@ -1,121 +1,67 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { Activity, Package, ShoppingBag, Users } from 'lucide-react';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="min-h-screen flex bg-neutral-50 text-neutral-800 font-sans">
+      {/* Sidebar Placeholder */}
+      <aside className="w-64 bg-white border-r border-neutral-200 flex flex-col">
+        <div className="p-6 border-b border-neutral-100">
+          <h1 className="text-xl font-medium tracking-tight text-neutral-900">Hanaz Official</h1>
+          <p className="text-xs text-neutral-500 mt-1 uppercase tracking-wider">Admin Dashboard</p>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+        <nav className="flex-1 p-4 space-y-1">
+          <a href="#" className="flex items-center gap-3 px-3 py-2 bg-brand-50 text-brand-700 rounded-md font-medium text-sm transition-colors">
+            <Activity size={18} />
+            Overview
+          </a>
+          <a href="#" className="flex items-center gap-3 px-3 py-2 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 rounded-md font-medium text-sm transition-colors">
+            <Package size={18} />
+            Products
+          </a>
+          <a href="#" className="flex items-center gap-3 px-3 py-2 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 rounded-md font-medium text-sm transition-colors">
+            <ShoppingBag size={18} />
+            Orders
+          </a>
+          <a href="#" className="flex items-center gap-3 px-3 py-2 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 rounded-md font-medium text-sm transition-colors">
+            <Users size={18} />
+            Customers
+          </a>
+        </nav>
+      </aside>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      {/* Main Content Placeholder */}
+      <main className="flex-1 overflow-auto">
+        <header className="bg-white border-b border-neutral-200 px-8 py-4 flex justify-between items-center sticky top-0 z-10">
+          <h2 className="text-xl font-medium">Dashboard Overview</h2>
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-medium text-sm">
+              AD
+            </div>
+          </div>
+        </header>
+        
+        <div className="p-8 max-w-6xl mx-auto space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm">
+              <h3 className="text-neutral-500 text-sm font-medium">Total Revenue</h3>
+              <p className="text-3xl font-medium mt-2">Rs. 0</p>
+            </div>
+            <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm">
+              <h3 className="text-neutral-500 text-sm font-medium">Active Orders</h3>
+              <p className="text-3xl font-medium mt-2">0</p>
+            </div>
+            <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm">
+              <h3 className="text-neutral-500 text-sm font-medium">Products</h3>
+              <p className="text-3xl font-medium mt-2">0</p>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl border border-neutral-200 shadow-sm min-h-[400px] flex items-center justify-center text-neutral-400">
+            Chart / Data Grid Area
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      </main>
+    </div>
   )
 }
 
