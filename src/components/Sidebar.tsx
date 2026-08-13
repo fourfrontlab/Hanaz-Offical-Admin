@@ -11,10 +11,10 @@ export default function Sidebar() {
   };
 
   const navItems = [
-    { name: 'Overview', path: '/', icon: Activity },
-    { name: 'Products', path: '/products', icon: Package },
-    { name: 'Orders', path: '/orders', icon: ShoppingBag },
-    { name: 'Marketing', path: '/marketing', icon: Users },
+    { name: 'Dashboard Overview', path: '/', icon: Activity },
+    { name: 'Orders & Returns', path: '/orders', icon: ShoppingBag },
+    { name: 'Product CMS', path: '/products', icon: Package },
+    { name: 'Marketing & CRM', path: '/marketing', icon: Users },
     { name: 'Settings', path: '/settings', icon: Settings },
   ];
 

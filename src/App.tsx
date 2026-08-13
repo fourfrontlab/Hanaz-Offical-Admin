@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom
 import { useAuth } from './hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
-import Sidebar from './components/Sidebar';
+import Layout from './components/Layout';
 import Login from './pages/Login';
 import DashboardOverview from './pages/DashboardOverview';
 import Products from './pages/Products';
@@ -25,12 +25,7 @@ function AuthGuard() {
     return <Navigate to="/login" replace />;
   }
 
-  return (
-    <div className="min-h-screen flex bg-neutral-50 text-neutral-800 font-sans">
-      <Sidebar />
-      <Outlet />
-    </div>
-  );
+  return <Layout />;
 }
 
 function App() {
