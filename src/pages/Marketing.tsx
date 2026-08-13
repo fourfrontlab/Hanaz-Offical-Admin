@@ -5,7 +5,6 @@ export default function Marketing() {
       <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm text-neutral-500">
           Marketing view coming soon...
         </div>
-      </div>
     </div>
   );
 }
