@@ -45,7 +45,7 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData({ ...formData, [name]: checked });
@@ -75,7 +75,7 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/50 backdrop-blur-sm overflow-y-auto">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col my-8">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200">
           <h2 className="text-xl font-medium text-neutral-900">
@@ -89,7 +89,7 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
         {/* Scrollable Form Body */}
         <div className="flex-1 overflow-y-auto p-6">
           <form id="product-form" onSubmit={handleSubmit} className="space-y-8">
-            
+
             {/* Section: Basic Info */}
             <div>
               <h3 className="text-sm font-semibold text-neutral-900 uppercase tracking-wider mb-4 border-b border-neutral-100 pb-2">Basic Info</h3>
@@ -98,7 +98,7 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
                   <label className="text-sm font-medium text-neutral-700">Product Title *</label>
                   <input required name="title" value={formData.title || ''} onChange={handleChange} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500" placeholder="e.g., Hanaz Vitamin C Serum" />
                 </div>
-                
+
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-neutral-700">Category</label>
                   <select name="category" value={formData.category || ''} onChange={handleChange} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500">
@@ -109,12 +109,12 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
                     <option value="Cleansers">Cleansers</option>
                   </select>
                 </div>
-                
+
                 <div className="space-y-1 md:col-span-2">
                   <label className="text-sm font-medium text-neutral-700">Description</label>
                   <textarea name="description" value={formData.description || ''} onChange={handleChange} rows={3} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500" />
                 </div>
-                
+
                 <div className="space-y-1 md:col-span-2">
                   <label className="text-sm font-medium text-neutral-700">Ingredients</label>
                   <textarea name="ingredients" value={formData.ingredients || ''} onChange={handleChange} rows={2} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500" />
