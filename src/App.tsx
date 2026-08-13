@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { Loader2 } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -31,6 +32,7 @@ function AuthGuard() {
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
       <Routes>
         <Route path="/login" element={<Login />} />
         

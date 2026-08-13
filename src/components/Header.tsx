@@ -25,6 +25,12 @@ export default function Header() {
         <input
           type="text"
           placeholder="Search Order ID, phone, tracking #..."
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              const query = e.currentTarget.value;
+              navigate(query ? `/orders?q=${encodeURIComponent(query)}` : '/orders');
+            }
+          }}
           className="block w-full pl-10 pr-3 py-2 border border-neutral-200 rounded-lg text-sm bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors placeholder-neutral-400"
         />
       </div>
