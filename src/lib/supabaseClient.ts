@@ -1,8 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-// These environment variables need to be set in your .env file
-// Using placeholders for now, the user will need to provide them or we can ask for them.
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-anon-key';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    '🔴 Supabase env vars are not set! ' +
+    'Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env.local file ' +
+    'AND to the Vercel project settings (Project → Settings → Environment Variables). ' +
+    'Then trigger a Vercel redeploy.'
+  );
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
