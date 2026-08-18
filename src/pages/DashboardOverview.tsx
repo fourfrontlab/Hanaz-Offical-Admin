@@ -9,7 +9,7 @@ export default function DashboardOverview() {
     new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', maximumFractionDigits: 0 }).format(val);
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-6">
+    <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-4 md:space-y-6">
       
       {loading && stats.grossSales === 0 ? (
         <div className="flex justify-center items-center h-32">

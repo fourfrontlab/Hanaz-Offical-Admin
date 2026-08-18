@@ -1,8 +1,8 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Activity, Package, ShoppingBag, Users, Settings, LogOut } from 'lucide-react';
+import { Activity, Package, ShoppingBag, Users, Settings, LogOut, X } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -19,10 +19,19 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-neutral-200 flex flex-col h-screen sticky top-0">
-      <div className="p-6 border-b border-neutral-100">
-        <h1 className="text-xl font-medium tracking-tight text-neutral-900">Hanaz Official</h1>
-        <p className="text-xs text-neutral-500 mt-1 uppercase tracking-wider">Admin Dashboard</p>
+    <aside className={`
+      fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-neutral-200 flex flex-col h-screen transition-transform duration-300 ease-in-out
+      md:sticky md:top-0 md:translate-x-0
+      ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+    `}>
+      <div className="p-6 border-b border-neutral-100 flex justify-between items-center">
+        <div>
+          <h1 className="text-xl font-medium tracking-tight text-neutral-900">Hanaz Official</h1>
+          <p className="text-xs text-neutral-500 mt-1 uppercase tracking-wider">Admin Dashboard</p>
+        </div>
+        <button onClick={onClose} className="md:hidden text-neutral-400 hover:text-neutral-600">
+          <X size={20} />
+        </button>
       </div>
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => (

@@ -46,8 +46,8 @@ export default function Orders() {
   };
 
   return (
-    <div className="p-8 max-w-[1400px] mx-auto space-y-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 md:mb-6">
         <h2 className="text-xl font-medium">Orders & Returns</h2>
         {query && (
           <div className="text-sm text-neutral-500 bg-white px-3 py-1 rounded-full border border-neutral-200">

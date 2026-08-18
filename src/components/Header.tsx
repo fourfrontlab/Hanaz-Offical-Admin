@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Search, Bell, Calendar, ChevronDown, LogOut } from 'lucide-react';
+import { Search, Bell, Calendar, ChevronDown, LogOut, Menu } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
-export default function Header() {
+export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const navigate = useNavigate();
   const { session } = useAuth();
   const [profileOpen, setProfileOpen] = useState(false);
@@ -15,10 +15,19 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white border-b border-neutral-200 px-8 py-4 flex justify-between items-center sticky top-0 z-20">
+    <header className="bg-white border-b border-neutral-200 px-4 md:px-8 py-3 md:py-4 flex justify-between items-center sticky top-0 z-20 gap-4">
       
-      {/* Search Bar */}
-      <div className="relative w-96">
+      <div className="flex items-center gap-2 flex-1">
+        {/* Mobile Menu Button */}
+        <button 
+          onClick={onMenuClick}
+          className="md:hidden p-2 -ml-2 text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
+        {/* Search Bar */}
+        <div className="relative flex-1 max-w-md hidden sm:block">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="h-4 w-4 text-neutral-400" />
         </div>
@@ -35,9 +44,9 @@ export default function Header() {
         />
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-2 md:gap-6">
         {/* Date Range Selector */}
-        <button className="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+        <button className="hidden lg:flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
           <Calendar className="h-4 w-4" />
           <span>Last 30 Days</span>
           <ChevronDown className="h-4 w-4 text-neutral-400" />
@@ -53,12 +62,12 @@ export default function Header() {
         <div className="relative">
           <button 
             onClick={() => setProfileOpen(!profileOpen)}
-            className="flex items-center gap-3 p-1 pr-2 rounded-full hover:bg-neutral-50 transition-colors border border-transparent hover:border-neutral-200 focus:outline-none"
+            className="flex items-center gap-2 md:gap-3 p-1 md:pr-2 rounded-full hover:bg-neutral-50 transition-colors border border-transparent hover:border-neutral-200 focus:outline-none"
           >
-            <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-medium text-sm">
+            <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-medium text-sm flex-shrink-0">
               AD
             </div>
-            <div className="flex flex-col items-start text-left">
+            <div className="hidden md:flex flex-col items-start text-left">
               <span className="text-sm font-medium text-neutral-700 leading-none mb-1">
                 Admin
               </span>
@@ -66,7 +75,7 @@ export default function Header() {
                 {session?.user?.email || 'admin@hanaz.com'}
               </span>
             </div>
-            <ChevronDown className="h-4 w-4 text-neutral-400 ml-1" />
+            <ChevronDown className="h-4 w-4 text-neutral-400 ml-0 md:ml-1 hidden sm:block" />
           </button>
 
           {profileOpen && (

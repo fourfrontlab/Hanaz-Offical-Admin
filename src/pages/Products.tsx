@@ -45,12 +45,12 @@ export default function Products() {
     new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', maximumFractionDigits: 0 }).format(val);
 
   return (
-    <div className="p-8 max-w-[1400px] mx-auto space-y-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 md:mb-6">
         <h2 className="text-xl font-medium">Product CMS</h2>
         <button 
           onClick={handleOpenCreate}
-          className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
+          className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Add Product
