@@ -2,11 +2,20 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useFilter } from '../context/FilterContext';
 
+export interface OrderItem {
+  id: string;
+  product_id: string | null;
+  title_snapshot: string;
+  qty: number;
+  price_at_order: number;
+}
+
 export interface Order {
   id: string;
   order_number: string;
   customer_name: string;
   customer_phone: string;
+  address: string | null;
   total_amount: number;
   payment_method: string;
   status: string;
@@ -35,7 +44,6 @@ export function useOrders(searchQuery: string | null = null) {
     }
 
     if (searchQuery) {
-      // Supabase text search for multiple columns
       query = query.or(`order_number.ilike.%${searchQuery}%,customer_phone.ilike.%${searchQuery}%,tracking_number.ilike.%${searchQuery}%`);
     }
 
@@ -49,10 +57,23 @@ export function useOrders(searchQuery: string | null = null) {
     setLoading(false);
   };
 
+  // Lazy-load full item data for a specific order (called on row expand)
+  const fetchOrderItems = async (orderId: string): Promise<OrderItem[]> => {
+    const { data, error } = await supabase
+      .from('order_items')
+      .select('id, product_id, title_snapshot, qty, price_at_order')
+      .eq('order_id', orderId);
+
+    if (error) {
+      console.error('Error fetching order items:', error);
+      return [];
+    }
+    return (data as OrderItem[]) || [];
+  };
+
   useEffect(() => {
     fetchOrders();
 
-    // Setup real-time subscription for orders
     const channel = supabase
       .channel('public:orders_list')
       .on(
@@ -87,5 +108,6 @@ export function useOrders(searchQuery: string | null = null) {
     if (error) throw error;
   };
 
-  return { orders, loading, updateOrderStatus, updateTracking, refetch: fetchOrders };
+  return { orders, loading, updateOrderStatus, updateTracking, fetchOrderItems, refetch: fetchOrders };
 }
+

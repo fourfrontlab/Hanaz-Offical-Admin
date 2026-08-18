@@ -116,3 +116,39 @@ create trigger trg_sync_in_stock
 before insert or update of stock_quantity on products
 for each row
 execute function sync_in_stock();
+
+-- Deduct stock when order_items rows are inserted (Option A: deduct at checkout)
+create or replace function deduct_stock_on_order()
+returns trigger as $$
+begin
+  update products
+  set stock_quantity = greatest(stock_quantity - new.qty, 0)
+  where id = new.product_id;
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger trg_deduct_stock_on_order
+after insert on order_items
+for each row
+execute function deduct_stock_on_order();
+
+-- Restore stock when order is marked Returned or Cancelled
+create or replace function restore_stock_on_return()
+returns trigger as $$
+begin
+  if new.status in ('Returned', 'Cancelled') and old.status not in ('Returned', 'Cancelled') then
+    update products p
+    set stock_quantity = p.stock_quantity + oi.qty
+    from order_items oi
+    where oi.order_id = new.id
+      and p.id = oi.product_id;
+  end if;
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger trg_restore_stock_on_return
+after update of status on orders
+for each row
+execute function restore_stock_on_return();

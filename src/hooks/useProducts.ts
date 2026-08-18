@@ -40,6 +40,23 @@ export function useProducts() {
 
   useEffect(() => {
     fetchProducts();
+
+    // Subscribe to real-time product updates so stock reflects live changes
+    // (e.g. stock_quantity decremented by the deduct_stock_on_order DB trigger)
+    const channel = supabase
+      .channel('public:products_live')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'products' },
+        () => {
+          fetchProducts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const createProduct = async (productData: Partial<Product>) => {
