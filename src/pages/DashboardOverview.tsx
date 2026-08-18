@@ -16,10 +16,15 @@ export default function DashboardOverview() {
           <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">
             <h3 className="text-neutral-500 text-sm font-medium">Gross Sales</h3>
             <p className="text-2xl sm:text-3xl font-medium mt-2 break-words">{formatCurrency(stats.grossSales)}</p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">
+            <h3 className="text-neutral-500 text-sm font-medium">Total Orders</h3>
+            <p className="text-2xl sm:text-3xl font-medium mt-2 break-words">{stats.totalOrders}</p>
           </div>
           
           <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">

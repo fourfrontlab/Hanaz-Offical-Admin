@@ -13,6 +13,7 @@ create table products (
   sale_price numeric not null default 0,
   discount_pct numeric default 0,
   cost_price numeric not null default 0, -- used for profit calc, admin-only visibility
+  stock_quantity integer not null default 0,
   image_urls text[] default '{}',
   is_featured boolean default false,
   is_bestseller boolean default false,
@@ -102,3 +103,16 @@ create trigger trg_adjust_order_profit
 before update of status on orders
 for each row
 execute function adjust_order_profit();
+
+create or replace function sync_in_stock()
+returns trigger as $$
+begin
+  new.in_stock := new.stock_quantity > 0;
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger trg_sync_in_stock
+before insert or update of stock_quantity on products
+for each row
+execute function sync_in_stock();

@@ -3,15 +3,35 @@ import { Search, Bell, Calendar, ChevronDown, LogOut, Menu } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useFilter, DateRangeLabel } from '../context/FilterContext';
 
 export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const navigate = useNavigate();
   const { session } = useAuth();
+  const { dateRange, setDateRange } = useFilter();
   const [profileOpen, setProfileOpen] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
+  };
+
+  const handleDateRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const label = e.target.value as DateRangeLabel;
+    const end = new Date();
+    let start: Date | null = new Date();
+    
+    if (label === 'Last 7 Days') {
+      start.setDate(end.getDate() - 7);
+    } else if (label === 'Last 30 Days') {
+      start.setDate(end.getDate() - 30);
+    } else if (label === 'This Month') {
+      start = new Date(end.getFullYear(), end.getMonth(), 1);
+    } else {
+      start = null; // All Time
+    }
+    
+    setDateRange({ startDate: start, endDate: end, label });
   };
 
   return (
@@ -47,11 +67,19 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
 
       <div className="flex items-center gap-2 md:gap-6 ml-auto">
         {/* Date Range Selector */}
-        <button className="hidden lg:flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+        <div className="hidden lg:flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 px-2 py-1 rounded-md border border-neutral-200">
           <Calendar className="h-4 w-4" />
-          <span>Last 30 Days</span>
-          <ChevronDown className="h-4 w-4 text-neutral-400" />
-        </button>
+          <select 
+            value={dateRange.label} 
+            onChange={handleDateRangeChange}
+            className="bg-transparent border-none focus:outline-none focus:ring-0 text-sm font-medium cursor-pointer"
+          >
+            <option value="Last 7 Days">Last 7 Days</option>
+            <option value="Last 30 Days">Last 30 Days</option>
+            <option value="This Month">This Month</option>
+            <option value="All Time">All Time</option>
+          </select>
+        </div>
 
         {/* Notification Bell */}
         <button className="relative p-2 text-neutral-400 hover:text-neutral-600 transition-colors rounded-full hover:bg-neutral-50">

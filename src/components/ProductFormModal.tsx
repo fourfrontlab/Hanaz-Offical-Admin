@@ -27,6 +27,7 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
       is_featured: false,
       is_bestseller: false,
       in_stock: true,
+      stock_quantity: 0,
     }
   );
 
@@ -128,10 +129,10 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
               <DragDropImageUploader imageUrls={formData.image_urls || []} onChange={handleImagesChange} />
             </div>
 
-            {/* Section: Pricing */}
+            {/* Section: Pricing & Inventory */}
             <div>
               <h3 className="text-sm font-semibold text-neutral-900 uppercase tracking-wider mb-4 border-b border-neutral-100 pb-2">Pricing & Inventory</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-neutral-700">Base Price (Rs.)</label>
                   <input type="number" name="base_price" value={formData.base_price || 0} onChange={handleChange} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500" />
@@ -147,6 +148,10 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-neutral-700">Discount %</label>
                   <input type="number" name="discount_pct" value={formData.discount_pct || 0} onChange={handleChange} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500 bg-neutral-50" readOnly title="Auto calculated from Base and Sale price" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-neutral-700">Stock Quantity *</label>
+                  <input required type="number" name="stock_quantity" value={formData.stock_quantity || 0} onChange={handleChange} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500" />
                 </div>
               </div>
             </div>

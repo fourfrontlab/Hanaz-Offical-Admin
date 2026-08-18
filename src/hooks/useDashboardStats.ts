@@ -1,28 +1,40 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { useFilter } from '../context/FilterContext';
 
 export interface DashboardStats {
   grossSales: number;
   netProfit: number;
   pendingCod: number;
   returnRate: number;
+  totalOrders: number;
 }
 
 export function useDashboardStats() {
+  const { dateRange } = useFilter();
   const [stats, setStats] = useState<DashboardStats>({
     grossSales: 0,
     netProfit: 0,
     pendingCod: 0,
     returnRate: 0,
+    totalOrders: 0,
   });
   const [loading, setLoading] = useState(true);
 
   const fetchStats = async () => {
     setLoading(true);
-    // Fetch all orders for the POC. In production, add date range filtering.
-    const { data: orders, error } = await supabase
+    let query = supabase
       .from('orders')
       .select('status, total_amount, net_profit, payment_method');
+
+    if (dateRange.startDate) {
+      query = query.gte('created_at', dateRange.startDate.toISOString());
+    }
+    if (dateRange.endDate) {
+      query = query.lte('created_at', dateRange.endDate.toISOString());
+    }
+
+    const { data: orders, error } = await query;
 
     if (error) {
       console.error('Error fetching orders:', error);
@@ -65,6 +77,7 @@ export function useDashboardStats() {
         netProfit,
         pendingCod,
         returnRate,
+        totalOrders,
       });
     }
 
@@ -90,7 +103,7 @@ export function useDashboardStats() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [dateRange]);
 
   return { stats, loading, refetch: fetchStats };
 }

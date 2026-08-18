@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { useFilter } from '../context/FilterContext';
 
 export interface Order {
   id: string;
@@ -15,6 +16,7 @@ export interface Order {
 }
 
 export function useOrders(searchQuery: string | null = null) {
+  const { dateRange } = useFilter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,6 +26,13 @@ export function useOrders(searchQuery: string | null = null) {
       .from('orders')
       .select('*, order_items(count)')
       .order('created_at', { ascending: false });
+
+    if (dateRange.startDate) {
+      query = query.gte('created_at', dateRange.startDate.toISOString());
+    }
+    if (dateRange.endDate) {
+      query = query.lte('created_at', dateRange.endDate.toISOString());
+    }
 
     if (searchQuery) {
       // Supabase text search for multiple columns
@@ -58,7 +67,7 @@ export function useOrders(searchQuery: string | null = null) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [searchQuery]);
+  }, [searchQuery, dateRange]);
 
   const updateOrderStatus = async (id: string, newStatus: string) => {
     const { error } = await supabase

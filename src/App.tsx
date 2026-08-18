@@ -29,23 +29,27 @@ function AuthGuard() {
   return <Layout />;
 }
 
+import { FilterProvider } from './context/FilterContext';
+
 function App() {
   return (
-    <BrowserRouter>
-      <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        
-        {/* Protected Dashboard Routes */}
-        <Route element={<AuthGuard />}>
-          <Route path="/" element={<DashboardOverview />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/marketing" element={<Marketing />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <FilterProvider>
+      <BrowserRouter>
+        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          
+          {/* Protected Dashboard Routes */}
+          <Route element={<AuthGuard />}>
+            <Route path="/" element={<DashboardOverview />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/marketing" element={<Marketing />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </FilterProvider>
   );
 }
 

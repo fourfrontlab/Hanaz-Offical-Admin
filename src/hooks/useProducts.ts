@@ -15,6 +15,7 @@ export interface Product {
   is_featured: boolean;
   is_bestseller: boolean;
   in_stock: boolean;
+  stock_quantity: number;
   created_at: string;
 }
 

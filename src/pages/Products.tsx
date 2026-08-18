@@ -116,9 +116,13 @@ export default function Products() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-medium rounded-full ${
-                        product.in_stock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        product.stock_quantity === 0 ? 'bg-red-100 text-red-800' : 
+                        product.stock_quantity < 5 ? 'bg-orange-100 text-orange-800' : 
+                        'bg-green-100 text-green-800'
                       }`}>
-                        {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                        {product.stock_quantity === 0 ? 'Out of Stock' : 
+                         product.stock_quantity < 5 ? `Low Stock (${product.stock_quantity})` : 
+                         `In Stock (${product.stock_quantity})`}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
