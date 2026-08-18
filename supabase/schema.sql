@@ -152,3 +152,47 @@ create trigger trg_restore_stock_on_return
 after update of status on orders
 for each row
 execute function restore_stock_on_return();
+
+-- ==========================================
+-- STOREFRONT RPCs
+-- ==========================================
+
+create or replace function get_order_by_number_and_phone(
+  p_order_number text,
+  p_phone text
+)
+returns table (
+  order_number text,
+  status text,
+  total_amount numeric,
+  tracking_number text,
+  courier text,
+  created_at timestamptz
+) as $$
+begin
+  return query
+  select o.order_number, o.status, o.total_amount, o.tracking_number, o.courier, o.created_at
+  from orders o
+  where o.order_number = p_order_number
+    and o.phone = p_phone;
+end;
+$$ language plpgsql security definer;
+
+create or replace function get_order_items_by_number_and_phone(
+  p_order_number text,
+  p_phone text
+)
+returns table (
+  title_snapshot text,
+  qty integer,
+  price_at_order numeric
+) as $$
+begin
+  return query
+  select oi.title_snapshot, oi.qty, oi.price_at_order
+  from order_items oi
+  join orders o on o.id = oi.order_id
+  where o.order_number = p_order_number
+    and o.phone = p_phone;
+end;
+$$ language plpgsql security definer;
