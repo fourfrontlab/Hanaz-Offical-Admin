@@ -3,7 +3,7 @@ import { Search, Bell, Calendar, ChevronDown, LogOut, Menu } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { useFilter, DateRangeLabel } from '../context/FilterContext';
+import { useFilter, type DateRangeLabel } from '../context/FilterContext';
 
 export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const navigate = useNavigate();

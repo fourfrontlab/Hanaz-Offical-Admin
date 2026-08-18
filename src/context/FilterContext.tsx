@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 
 export type DateRangeLabel = 'Last 7 Days' | 'Last 30 Days' | 'This Month' | 'All Time';
 
