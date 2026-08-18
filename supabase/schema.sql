@@ -126,7 +126,7 @@ begin
   where id = new.product_id;
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql security definer;
 
 create trigger trg_deduct_stock_on_order
 after insert on order_items

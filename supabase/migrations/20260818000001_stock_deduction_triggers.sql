@@ -13,7 +13,7 @@ begin
   where id = new.product_id;
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql security definer;
 
 drop trigger if exists trg_deduct_stock_on_order on order_items;
 create trigger trg_deduct_stock_on_order
@@ -34,7 +34,7 @@ begin
   end if;
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql security definer;
 
 drop trigger if exists trg_restore_stock_on_return on orders;
 create trigger trg_restore_stock_on_return
