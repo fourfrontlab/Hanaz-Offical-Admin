@@ -1,9 +1,13 @@
-import { useState } from 'react';
-import { Send, Clock, Users, Mail, MessageSquare, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Send, Clock, Users, Mail, MessageSquare, Loader2, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { supabase } from '../lib/supabaseClient';
 
 export default function Marketing() {
   const [loading, setLoading] = useState(false);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [fetching, setFetching] = useState(true);
+  
   const [formData, setFormData] = useState({
     name: '',
     segment: 'all',
@@ -13,6 +17,28 @@ export default function Marketing() {
     scheduleDate: '',
     scheduleTime: '',
   });
+
+  const fetchCampaigns = async () => {
+    try {
+      setFetching(true);
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('*')
+        .eq('status', 'scheduled')
+        .order('scheduled_at', { ascending: true });
+        
+      if (error) throw error;
+      setCampaigns(data || []);
+    } catch (error: any) {
+      toast.error('Failed to load campaigns: ' + error.message);
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,14 +57,36 @@ export default function Marketing() {
     setFormData({ ...formData, template, message: defaultMsg });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.name || !formData.message || !formData.scheduleDate || !formData.scheduleTime) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+    if (formData.channel !== 'email') {
+      toast.error("Only Email channel is currently supported.");
+      return;
+    }
+
     setLoading(true);
     
-    // Simulate API call to 3rd party email/SMS provider
-    setTimeout(() => {
-      setLoading(false);
-      toast.success(`Campaign "${formData.name}" scheduled successfully! (Stubbed)`);
+    try {
+      const scheduled_at = new Date(`${formData.scheduleDate}T${formData.scheduleTime}`).toISOString();
+      
+      const { error } = await supabase.from('campaigns').insert([{
+        name: formData.name,
+        segment: formData.segment,
+        message_template: formData.template,
+        subject: formData.name, // using name as subject for now
+        message_content: formData.message,
+        scheduled_at,
+        status: 'scheduled'
+      }]);
+
+      if (error) throw error;
+
+      toast.success(`Campaign "${formData.name}" scheduled successfully!`);
+      
       // Reset form
       setFormData({
         name: '',
@@ -49,7 +97,46 @@ export default function Marketing() {
         scheduleDate: '',
         scheduleTime: '',
       });
-    }, 1500);
+      
+      fetchCampaigns();
+    } catch (error: any) {
+      toast.error('Failed to schedule campaign: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = async (id: string) => {
+    if (!confirm('Are you sure you want to cancel this campaign?')) return;
+    try {
+      const { error } = await supabase
+        .from('campaigns')
+        .update({ status: 'cancelled' })
+        .eq('id', id);
+        
+      if (error) throw error;
+      toast.success('Campaign cancelled.');
+      fetchCampaigns();
+    } catch (error: any) {
+      toast.error('Failed to cancel campaign: ' + error.message);
+    }
+  };
+
+  const formatDate = (isoString: string) => {
+    const d = new Date(isoString);
+    const now = new Date();
+    const diff = d.getTime() - now.getTime();
+    const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+    
+    const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    if (diffDays === 0 && d.getDate() === now.getDate()) {
+      return `Today, ${timeStr}`;
+    } else if (diffDays === 1 || (diffDays === 0 && d.getDate() !== now.getDate())) {
+      return `Tomorrow, ${timeStr}`;
+    } else {
+      return `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${timeStr}`;
+    }
   };
 
   return (
@@ -95,8 +182,8 @@ export default function Marketing() {
                     className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500"
                   >
                     <option value="all">All Customers</option>
-                    <option value="registered">Registered Customers Only</option>
-                    <option value="guest">Guest Customers Only</option>
+                    <option value="registered" disabled>Registered Customers Only</option>
+                    <option value="guest" disabled>Guest Customers Only</option>
                   </select>
                 </div>
 
@@ -107,9 +194,9 @@ export default function Marketing() {
                       <input type="radio" name="channel" value="email" checked={formData.channel === 'email'} onChange={handleChange} className="text-brand-600 focus:ring-brand-500" />
                       <span className="text-sm font-medium text-neutral-700 flex items-center gap-1"><Mail className="w-4 h-4"/> Email</span>
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="channel" value="sms" checked={formData.channel === 'sms'} onChange={handleChange} className="text-brand-600 focus:ring-brand-500" />
-                      <span className="text-sm font-medium text-neutral-700 flex items-center gap-1"><MessageSquare className="w-4 h-4"/> SMS</span>
+                    <label className="flex items-center gap-2 cursor-not-allowed opacity-50">
+                      <input type="radio" name="channel" value="sms" disabled className="text-brand-600 focus:ring-brand-500" />
+                      <span className="text-sm font-medium text-neutral-700 flex items-center gap-1"><MessageSquare className="w-4 h-4"/> SMS <span className="text-[10px] bg-neutral-200 px-1.5 py-0.5 rounded">Coming Soon</span></span>
                     </label>
                   </div>
                 </div>
@@ -185,7 +272,7 @@ export default function Marketing() {
           </div>
         </div>
 
-        {/* Right Column: Upcoming Campaigns (Stub) */}
+        {/* Right Column: Upcoming Campaigns */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-neutral-200 bg-neutral-50">
@@ -193,29 +280,38 @@ export default function Marketing() {
             </div>
             <div className="divide-y divide-neutral-100">
               
-              <div className="p-4 hover:bg-neutral-50 transition-colors">
-                <div className="flex justify-between items-start mb-1">
-                  <h4 className="text-sm font-medium text-neutral-900">Eid Mega Sale</h4>
-                  <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[10px] font-bold uppercase tracking-wider">SMS</span>
+              {fetching ? (
+                <div className="p-8 flex justify-center">
+                  <Loader2 className="w-6 h-6 animate-spin text-neutral-400" />
                 </div>
-                <p className="text-xs text-neutral-500 mb-2">Segment: All Customers</p>
-                <div className="flex items-center gap-1 text-xs font-medium text-brand-600">
-                  <Clock className="w-3 h-3" />
-                  Tomorrow, 10:00 AM
+              ) : campaigns.length === 0 ? (
+                <div className="p-8 text-center text-sm text-neutral-500">
+                  No upcoming campaigns scheduled.
                 </div>
-              </div>
-
-              <div className="p-4 hover:bg-neutral-50 transition-colors">
-                <div className="flex justify-between items-start mb-1">
-                  <h4 className="text-sm font-medium text-neutral-900">Win-back Flow</h4>
-                  <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-bold uppercase tracking-wider">Email</span>
-                </div>
-                <p className="text-xs text-neutral-500 mb-2">Segment: Guest Customers</p>
-                <div className="flex items-center gap-1 text-xs font-medium text-brand-600">
-                  <Clock className="w-3 h-3" />
-                  Oct 15, 2:00 PM
-                </div>
-              </div>
+              ) : (
+                campaigns.map((campaign) => (
+                  <div key={campaign.id} className="p-4 hover:bg-neutral-50 transition-colors group">
+                    <div className="flex justify-between items-start mb-1">
+                      <h4 className="text-sm font-medium text-neutral-900">{campaign.name}</h4>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-bold uppercase tracking-wider">Email</span>
+                        <button 
+                          onClick={() => handleCancel(campaign.id)}
+                          className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 transition-opacity"
+                          title="Cancel campaign"
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-neutral-500 mb-2">Segment: {campaign.segment === 'all' ? 'All Customers' : campaign.segment}</p>
+                    <div className="flex items-center gap-1 text-xs font-medium text-brand-600">
+                      <Clock className="w-3 h-3" />
+                      {formatDate(campaign.scheduled_at)}
+                    </div>
+                  </div>
+                ))
+              )}
 
             </div>
           </div>

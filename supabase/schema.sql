@@ -28,6 +28,7 @@ create table orders (
   order_number text unique not null, -- human-friendly ID shown in UI
   customer_name text not null,
   phone text not null,
+  email text,
   address text,
   payment_method text not null check (payment_method in ('COD', 'Prepaid')),
   status text not null default 'Pending'
@@ -51,6 +52,21 @@ create table order_items (
   cost_at_order numeric not null -- product cost_price at time of order, for profit calc
 );
 
+-- CAMPAIGNS
+create table campaigns (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  segment text not null default 'all', -- 'all' for now; expand later if customer accounts are added
+  message_template text, -- e.g. 'Abandoned Cart Flow', 'Custom' — free text for now
+  subject text,
+  message_content text not null,
+  scheduled_at timestamptz not null,
+  status text not null default 'scheduled'
+    check (status in ('scheduled', 'sent', 'failed', 'cancelled')),
+  sent_at timestamptz,
+  created_at timestamptz default now()
+);
+
 -- ==========================================
 -- ROW LEVEL SECURITY (RLS)
 -- ==========================================
@@ -71,6 +87,11 @@ create policy "authenticated full access orders" on orders
 
 -- ORDER_ITEMS: same as orders
 create policy "authenticated full access order_items" on order_items
+  for all using (auth.role() = 'authenticated');
+
+-- CAMPAIGNS: admin-only
+alter table campaigns enable row level security;
+create policy "authenticated full access campaigns" on campaigns
   for all using (auth.role() = 'authenticated');
 
 -- ==========================================
