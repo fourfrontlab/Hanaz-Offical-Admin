@@ -15,9 +15,9 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   };
 
   return (
-    <header className="bg-white border-b border-neutral-200 px-4 md:px-8 py-3 md:py-4 flex justify-between items-center sticky top-0 z-20 gap-4">
+    <header className="bg-white border-b border-neutral-200 px-4 md:px-8 py-3 md:py-4 flex flex-wrap md:flex-nowrap justify-between items-center sticky top-0 z-20 gap-4 md:gap-6">
       
-      <div className="flex items-center gap-2 flex-1">
+      <div className="flex items-center gap-2">
         {/* Mobile Menu Button */}
         <button 
           onClick={onMenuClick}
@@ -25,9 +25,10 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         >
           <Menu className="h-5 w-5" />
         </button>
+      </div>
 
-        {/* Search Bar */}
-        <div className="relative flex-1 max-w-md hidden sm:block">
+      {/* Search Bar */}
+      <div className="relative w-full order-last md:order-none md:flex-1 max-w-full md:max-w-md">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="h-4 w-4 text-neutral-400" />
         </div>
@@ -44,7 +45,7 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         />
       </div>
 
-      <div className="flex items-center gap-2 md:gap-6">
+      <div className="flex items-center gap-2 md:gap-6 ml-auto">
         {/* Date Range Selector */}
         <button className="hidden lg:flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
           <Calendar className="h-4 w-4" />

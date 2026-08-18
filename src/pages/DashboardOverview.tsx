@@ -16,25 +16,25 @@ export default function DashboardOverview() {
           <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">
             <h3 className="text-neutral-500 text-sm font-medium">Gross Sales</h3>
-            <p className="text-3xl font-medium mt-2">{formatCurrency(stats.grossSales)}</p>
+            <p className="text-2xl sm:text-3xl font-medium mt-2 break-words">{formatCurrency(stats.grossSales)}</p>
           </div>
           
           <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">
             <h3 className="text-neutral-500 text-sm font-medium">Net Profit</h3>
-            <p className="text-3xl font-medium mt-2 text-green-600">{formatCurrency(stats.netProfit)}</p>
+            <p className="text-2xl sm:text-3xl font-medium mt-2 text-green-600 break-words">{formatCurrency(stats.netProfit)}</p>
           </div>
           
           <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">
             <h3 className="text-neutral-500 text-sm font-medium">Pending COD</h3>
-            <p className="text-3xl font-medium mt-2 text-amber-600">{formatCurrency(stats.pendingCod)}</p>
+            <p className="text-2xl sm:text-3xl font-medium mt-2 text-amber-600 break-words">{formatCurrency(stats.pendingCod)}</p>
           </div>
           
           <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm relative overflow-hidden">
             <h3 className="text-neutral-500 text-sm font-medium">Return Rate</h3>
-            <p className="text-3xl font-medium mt-2 text-red-500">{stats.returnRate.toFixed(1)}%</p>
+            <p className="text-2xl sm:text-3xl font-medium mt-2 text-red-500 break-words">{stats.returnRate.toFixed(1)}%</p>
           </div>
         </div>
       )}

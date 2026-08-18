@@ -131,7 +131,7 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
             {/* Section: Pricing */}
             <div>
               <h3 className="text-sm font-semibold text-neutral-900 uppercase tracking-wider mb-4 border-b border-neutral-100 pb-2">Pricing & Inventory</h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-neutral-700">Base Price (Rs.)</label>
                   <input type="number" name="base_price" value={formData.base_price || 0} onChange={handleChange} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500" />
@@ -154,7 +154,7 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
             {/* Section: Visibility & Flags */}
             <div>
               <h3 className="text-sm font-semibold text-neutral-900 uppercase tracking-wider mb-4 border-b border-neutral-100 pb-2">Storefront Visibility</h3>
-              <div className="flex gap-8">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" name="in_stock" checked={formData.in_stock} onChange={handleChange} className="w-4 h-4 text-brand-600 border-neutral-300 rounded focus:ring-brand-500" />
                   <span className="text-sm font-medium text-neutral-700">In Stock</span>
