@@ -20,6 +20,7 @@ export interface Order {
   payment_method: string;
   status: string;
   tracking_number: string | null;
+  courier: string | null;
   created_at: string;
   order_items: [{ count: number }];
 }
@@ -99,10 +100,10 @@ export function useOrders(searchQuery: string | null = null) {
     if (error) throw error;
   };
 
-  const updateTracking = async (id: string, newTracking: string) => {
+  const updateTracking = async (id: string, newTracking: string, courier: string) => {
     const { error } = await supabase
       .from('orders')
-      .update({ tracking_number: newTracking })
+      .update({ tracking_number: newTracking, courier })
       .eq('id', id);
     
     if (error) throw error;

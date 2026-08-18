@@ -22,6 +22,7 @@ export default function Orders() {
 
   const [editingTracking, setEditingTracking] = useState<string | null>(null);
   const [trackingInput, setTrackingInput] = useState('');
+  const [courierInput, setCourierInput] = useState('');
 
   // Expandable row state
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
@@ -53,12 +54,16 @@ export default function Orders() {
   };
 
   const handleSaveTracking = async (orderId: string) => {
+    if (!trackingInput.trim() || !courierInput.trim()) {
+      toast.error('Both Tracking Number and Courier are required.');
+      return;
+    }
     try {
-      await updateTracking(orderId, trackingInput);
-      toast.success('Tracking number updated.');
+      await updateTracking(orderId, trackingInput, courierInput);
+      toast.success('Tracking details updated.');
       setEditingTracking(null);
     } catch (error) {
-      toast.error('Failed to update tracking.');
+      toast.error('Failed to update tracking details.');
     }
   };
 
@@ -169,22 +174,31 @@ export default function Orders() {
                               <div className="flex items-center gap-2">
                                 <input
                                   type="text"
+                                  value={courierInput}
+                                  onChange={(e) => setCourierInput(e.target.value)}
+                                  className="border border-neutral-300 rounded px-2 py-1 text-sm w-24"
+                                  placeholder="Courier"
+                                  required
+                                />
+                                <input
+                                  type="text"
                                   value={trackingInput}
                                   onChange={(e) => setTrackingInput(e.target.value)}
                                   className="border border-neutral-300 rounded px-2 py-1 text-sm w-32"
                                   placeholder="Tracking #"
+                                  required
                                 />
                                 <button onClick={() => handleSaveTracking(order.id)} className="text-brand-600 hover:text-brand-700 font-medium">Save</button>
                                 <button onClick={() => setEditingTracking(null)} className="text-neutral-400 hover:text-neutral-600">Cancel</button>
                               </div>
                             ) : (
                               <button
-                                onClick={() => { setEditingTracking(order.id); setTrackingInput(order.tracking_number || ''); }}
+                                onClick={() => { setEditingTracking(order.id); setTrackingInput(order.tracking_number || ''); setCourierInput(order.courier || ''); }}
                                 className="text-brand-600 hover:text-brand-700 flex items-center gap-1 transition-colors"
                                 title="Update Tracking"
                               >
                                 <Edit2 size={16} />
-                                {order.tracking_number ? order.tracking_number : 'Add Tracking'}
+                                {order.tracking_number && order.courier ? `${order.courier}: ${order.tracking_number}` : (order.tracking_number ? order.tracking_number : 'Add Tracking')}
                               </button>
                             )}
                             <button className="text-neutral-400 hover:text-neutral-600 transition-colors" title="View Courier Journey (Stub)">
@@ -271,7 +285,7 @@ export default function Orders() {
                                         </div>
                                         <div className="flex justify-between">
                                           <span className="text-neutral-400">Tracking</span>
-                                          <span className="font-medium">{order.tracking_number || '—'}</span>
+                                          <span className="font-medium">{order.tracking_number ? `${order.courier || 'Unknown'}: ${order.tracking_number}` : '—'}</span>
                                         </div>
                                         <div className="flex justify-between">
                                           <span className="text-neutral-400">Placed</span>
