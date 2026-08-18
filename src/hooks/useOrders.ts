@@ -15,6 +15,7 @@ export interface Order {
   order_number: string;
   customer_name: string;
   customer_phone: string;
+  email: string | null;
   address: string | null;
   total_amount: number;
   payment_method: string;

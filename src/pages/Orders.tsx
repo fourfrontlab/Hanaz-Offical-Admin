@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useOrders, type OrderItem } from '../hooks/useOrders';
 import StatusBadge from '../components/StatusBadge';
-import { Loader2, Search, Edit2, Truck, ChevronDown, ChevronUp, Package, MapPin, Phone, User } from 'lucide-react';
+import { Loader2, Search, Edit2, Truck, ChevronDown, ChevronUp, Package, MapPin, Phone, User, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const STATUS_OPTIONS = [
@@ -263,6 +263,10 @@ export default function Orders() {
                                         <div className="flex items-center gap-2 text-sm text-neutral-700">
                                           <Phone size={13} className="text-neutral-400 flex-shrink-0" />
                                           {order.customer_phone}
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm text-neutral-700">
+                                          <Mail size={13} className="text-neutral-400 flex-shrink-0" />
+                                          {order.email || <span className="text-neutral-400 italic">Not provided</span>}
                                         </div>
                                         {order.address && (
                                           <div className="flex items-start gap-2 text-sm text-neutral-700">
