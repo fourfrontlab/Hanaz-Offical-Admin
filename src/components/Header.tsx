@@ -73,7 +73,7 @@ function NotificationBell() {
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
+  // Close on outside click (desktop)
   useEffect(() => {
     if (!open) return;
     function handler(e: MouseEvent) {
@@ -83,6 +83,16 @@ function NotificationBell() {
     }
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  // Prevent body scroll when mobile dropdown is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
   }, [open]);
 
   const handleOpen = () => {
@@ -98,93 +108,122 @@ function NotificationBell() {
     navigate(notif.navigateTo);
   };
 
-  return (
-    <div className="relative" ref={panelRef}>
-      {/* Bell button */}
-      <button
-        id="notification-bell-btn"
-        aria-label="Notifications"
-        onClick={handleOpen}
-        className="relative p-2 text-neutral-400 hover:text-neutral-600 transition-colors rounded-full hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-brand-400"
-      >
-        <Bell className={`h-5 w-5 transition-transform duration-200 ${open ? 'scale-110' : ''}`} />
-        {/* Unread dot — only rendered when there are unread items */}
-        {unreadCount > 0 && (
-          <span
-            className="absolute top-1 right-1 flex h-2 w-2 items-center justify-center"
-            aria-hidden
-          >
-            <span className="absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75 animate-ping" />
-            <span className="relative block h-2 w-2 rounded-full bg-brand-500 ring-2 ring-white" />
-          </span>
-        )}
-      </button>
-
-      {/* Dropdown panel */}
-      {open && (
-        <div
-          id="notification-panel"
-          className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-neutral-200 z-50 overflow-hidden"
-          style={{ animation: 'notifSlideIn 0.15s ease-out' }}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-neutral-800">Notifications</h3>
-              {unreadCount > 0 && (
-                <span className="inline-flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-brand-500 text-white text-[10px] font-bold">
-                  {unreadCount}
-                </span>
-              )}
-            </div>
-            {notifications.length > 0 && (
-              <button
-                onClick={markAllAsRead}
-                className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 font-medium transition-colors"
-              >
-                <CheckCheck className="h-3.5 w-3.5" />
-                Mark all as read
-              </button>
-            )}
-          </div>
-
-          {/* Body */}
-          <div className="max-h-[400px] overflow-y-auto divide-y divide-neutral-100">
-            {loading ? (
-              <div className="flex items-center justify-center py-10 gap-2 text-neutral-400">
-                <div className="w-4 h-4 border-2 border-neutral-300 border-t-brand-500 rounded-full animate-spin" />
-                <span className="text-sm">Loading…</span>
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mb-3">
-                  <Package className="h-6 w-6 text-neutral-400" />
-                </div>
-                <p className="text-sm font-medium text-neutral-600">No new notifications</p>
-                <p className="text-xs text-neutral-400 mt-1">You're all caught up!</p>
-              </div>
-            ) : (
-              notifications.map((notif) => (
-                <NotifRow
-                  key={notif.id}
-                  notif={notif}
-                  isUnread={new Date(notif.createdAt).getTime() > new Date(lastReadAt).getTime()}
-                  onClick={() => handleNotifClick(notif)}
-                />
-              ))
-            )}
-          </div>
-
-          {/* Footer */}
-          {notifications.length > 0 && (
-            <div className="border-t border-neutral-100 px-4 py-2.5 text-center">
-              <p className="text-xs text-neutral-400">
-                Showing activity from the last 48 hours
-              </p>
-            </div>
+  // ── Shared panel inner content ────────────────────────────────────────────
+  const panelContent = (
+    <>
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-neutral-800">Notifications</h3>
+          {unreadCount > 0 && (
+            <span className="inline-flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-brand-500 text-white text-[10px] font-bold">
+              {unreadCount}
+            </span>
           )}
         </div>
+        {notifications.length > 0 && (
+          <button
+            onClick={markAllAsRead}
+            className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 font-medium transition-colors"
+          >
+            <CheckCheck className="h-3.5 w-3.5" />
+            Mark all as read
+          </button>
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="max-h-[60vh] sm:max-h-[400px] overflow-y-auto divide-y divide-neutral-100">
+        {loading ? (
+          <div className="flex items-center justify-center py-10 gap-2 text-neutral-400">
+            <div className="w-4 h-4 border-2 border-neutral-300 border-t-brand-500 rounded-full animate-spin" />
+            <span className="text-sm">Loading…</span>
+          </div>
+        ) : notifications.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+            <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mb-3">
+              <Package className="h-6 w-6 text-neutral-400" />
+            </div>
+            <p className="text-sm font-medium text-neutral-600">No new notifications</p>
+            <p className="text-xs text-neutral-400 mt-1">You're all caught up!</p>
+          </div>
+        ) : (
+          notifications.map((notif) => (
+            <NotifRow
+              key={notif.id}
+              notif={notif}
+              isUnread={new Date(notif.createdAt).getTime() > new Date(lastReadAt).getTime()}
+              onClick={() => handleNotifClick(notif)}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Footer */}
+      {notifications.length > 0 && (
+        <div className="border-t border-neutral-100 px-4 py-2.5 text-center">
+          <p className="text-xs text-neutral-400">
+            Showing activity from the last 48 hours
+          </p>
+        </div>
       )}
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile backdrop — renders behind the panel, above page content */}
+      {open && (
+        <div
+          className="sm:hidden fixed inset-0 bg-black/30 z-40"
+          onClick={() => setOpen(false)}
+          aria-hidden
+        />
+      )}
+
+      <div className="relative" ref={panelRef}>
+        {/* Bell button */}
+        <button
+          id="notification-bell-btn"
+          aria-label="Notifications"
+          onClick={handleOpen}
+          className="relative p-2 text-neutral-400 hover:text-neutral-600 transition-colors rounded-full hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-brand-400"
+        >
+          <Bell className={`h-5 w-5 transition-transform duration-200 ${open ? 'scale-110' : ''}`} />
+          {/* Unread dot */}
+          {unreadCount > 0 && (
+            <span
+              className="absolute top-1 right-1 flex h-2 w-2 items-center justify-center"
+              aria-hidden
+            >
+              <span className="absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75 animate-ping" />
+              <span className="relative block h-2 w-2 rounded-full bg-brand-500 ring-2 ring-white" />
+            </span>
+          )}
+        </button>
+
+        {/* ── MOBILE dropdown: fixed, full-width-minus-margins, below header ── */}
+        {open && (
+          <div
+            id="notification-panel"
+            className="sm:hidden fixed left-3 right-3 top-[64px] bg-white rounded-xl shadow-2xl border border-neutral-200 z-50 overflow-hidden"
+            style={{ animation: 'notifSlideIn 0.15s ease-out' }}
+          >
+            {panelContent}
+          </div>
+        )}
+
+        {/* ── DESKTOP dropdown: absolute, right-anchored, constrained width ── */}
+        {open && (
+          <div
+            id="notification-panel-desktop"
+            className="hidden sm:block absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-xl border border-neutral-200 z-50 overflow-hidden"
+            style={{ animation: 'notifSlideIn 0.15s ease-out' }}
+          >
+            {panelContent}
+          </div>
+        )}
+      </div>
 
       {/* Keyframe inline (avoids extra CSS file) */}
       <style>{`
@@ -193,7 +232,7 @@ function NotificationBell() {
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
       `}</style>
-    </div>
+    </>
   );
 }
 
