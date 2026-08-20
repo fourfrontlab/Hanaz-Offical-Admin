@@ -14,7 +14,7 @@ export interface Order {
   id: string;
   order_number: string;
   customer_name: string;
-  customer_phone: string;
+  phone: string;
   email: string | null;
   address: string | null;
   total_amount: number;
@@ -47,7 +47,7 @@ export function useOrders(searchQuery: string | null = null) {
     }
 
     if (searchQuery) {
-      query = query.or(`order_number.ilike.%${searchQuery}%,customer_phone.ilike.%${searchQuery}%,tracking_number.ilike.%${searchQuery}%`);
+      query = query.or(`order_number.ilike.%${searchQuery}%,phone.ilike.%${searchQuery}%,tracking_number.ilike.%${searchQuery}%`);
     }
 
     const { data, error } = await query;
