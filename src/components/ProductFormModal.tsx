@@ -18,7 +18,7 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
       title: '',
       category: 'Brightening',
       description: '',
-      ingredients: '',
+      ingredients: [],
       base_price: 0,
       sale_price: 0,
       discount_pct: 0,
@@ -116,9 +116,36 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }: P
                   <textarea name="description" value={formData.description || ''} onChange={handleChange} rows={3} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500" />
                 </div>
 
-                <div className="space-y-1 md:col-span-2">
-                  <label className="text-sm font-medium text-neutral-700">Ingredients</label>
-                  <textarea name="ingredients" value={formData.ingredients || ''} onChange={handleChange} rows={2} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500" />
+                <div className="space-y-4 md:col-span-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-medium text-neutral-700">Key Ingredients</label>
+                    <button type="button" onClick={() => setFormData({ ...formData, ingredients: [...(formData.ingredients || []), { name: '', description: '' }] })} className="text-sm font-medium text-brand-600 hover:text-brand-700">
+                      + Add Ingredient
+                    </button>
+                  </div>
+                  {(formData.ingredients || []).map((ing: any, i: number) => (
+                    <div key={i} className="flex gap-4 items-start bg-neutral-50 p-4 rounded-xl border border-neutral-200">
+                      <div className="flex-1 space-y-3">
+                        <input value={ing.name} onChange={(e) => {
+                          const newIng = [...(formData.ingredients || [])];
+                          newIng[i].name = e.target.value;
+                          setFormData({ ...formData, ingredients: newIng });
+                        }} placeholder="Ingredient Name (e.g., Vitamin C)" className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500" />
+                        <textarea value={ing.description} onChange={(e) => {
+                          const newIng = [...(formData.ingredients || [])];
+                          newIng[i].description = e.target.value;
+                          setFormData({ ...formData, ingredients: newIng });
+                        }} placeholder="Ingredient benefit description..." rows={2} className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500" />
+                      </div>
+                      <button type="button" onClick={() => {
+                        const newIng = [...(formData.ingredients || [])];
+                        newIng.splice(i, 1);
+                        setFormData({ ...formData, ingredients: newIng });
+                      }} className="p-2 text-neutral-400 hover:text-red-500 rounded-lg hover:bg-neutral-200 transition-colors">
+                        <X size={18} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

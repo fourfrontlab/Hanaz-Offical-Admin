@@ -6,7 +6,7 @@ export interface Product {
   title: string;
   category: string;
   description: string | null;
-  ingredients: string | null;
+  ingredients: { name: string; description: string }[] | null;
   base_price: number;
   sale_price: number;
   discount_pct: number;
