@@ -25,7 +25,7 @@ export function useDashboardStats() {
     setLoading(true);
     let query = supabase
       .from('orders')
-      .select('status, total_amount, net_profit, payment_method');
+      .select('status, total_amount, net_profit, payment_method, payment_status');
 
     if (dateRange.startDate) {
       query = query.gte('created_at', dateRange.startDate.toISOString());
@@ -50,22 +50,28 @@ export function useDashboardStats() {
       const totalOrders = orders.length;
 
       for (const order of orders) {
-        // Gross Sales
-        grossSales += Number(order.total_amount) || 0;
-        
-        // Net Profit
-        netProfit += Number(order.net_profit) || 0;
+        const isCancelled = order.status === 'Cancelled';
+        const isRefunded = order.payment_status === 'refunded';
+        const isReturned = order.status === 'Returned';
 
-        // Pending COD
+        // Gross Sales & Net Profit (exclude cancelled and refunded)
+        if (!isCancelled && !isRefunded) {
+          grossSales += Number(order.total_amount) || 0;
+          netProfit += Number(order.net_profit) || 0;
+        }
+
+        // Pending COD (COD, unpaid, not cancelled/returned)
         if (
           order.payment_method === 'COD' &&
-          !['Delivered', 'Returned', 'Cancelled'].includes(order.status)
+          order.payment_status === 'unpaid' &&
+          !isCancelled && 
+          !isReturned
         ) {
           pendingCod += Number(order.total_amount) || 0;
         }
 
-        // Return Count
-        if (order.status === 'Returned') {
+        // Return Rate Count (Cancelled + Refunded + Returned)
+        if (isCancelled || isRefunded || isReturned) {
           returnedCount++;
         }
       }
