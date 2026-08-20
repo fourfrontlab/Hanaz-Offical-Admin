@@ -18,7 +18,7 @@ export default function Orders() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q');
   
-  const { orders, loading, updateOrderStatus, updateTracking, fetchOrderItems } = useOrders(query);
+  const { orders, loading, updateOrderStatus, updateTracking, updatePaymentStatus, fetchOrderItems } = useOrders(query);
 
   const [editingTracking, setEditingTracking] = useState<string | null>(null);
   const [trackingInput, setTrackingInput] = useState('');
@@ -50,6 +50,15 @@ export default function Orders() {
       toast.success(`Status updated to ${newStatus}.`, { icon: '🔄' });
     } catch (error) {
       toast.error('Failed to update status.');
+    }
+  };
+
+  const handlePaymentStatusChange = async (orderId: string, newStatus: string) => {
+    try {
+      await updatePaymentStatus(orderId, newStatus);
+      toast.success(`Payment status updated to ${newStatus}.`, { icon: '💰' });
+    } catch (error) {
+      toast.error('Failed to update payment status.');
     }
   };
 
@@ -148,11 +157,26 @@ export default function Orders() {
                           {formatCurrency(order.total_amount)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                          <span className={`px-2 py-1 inline-flex text-xs leading-5 font-medium rounded ${
-                            order.payment_method === 'COD' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
-                          }`}>
-                            {order.payment_method}
-                          </span>
+                          <div className="flex flex-col gap-2 items-start">
+                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-medium rounded ${
+                              order.payment_method === 'COD' ? 'bg-amber-100 text-amber-800' : 'bg-brand-100 text-brand-800'
+                            }`}>
+                              {order.payment_method}
+                            </span>
+                            <select
+                              value={order.payment_status || 'unpaid'}
+                              onChange={(e) => handlePaymentStatusChange(order.id, e.target.value)}
+                              className={`text-xs border-neutral-300 rounded shadow-sm focus:border-brand-500 focus:ring-brand-500 cursor-pointer py-1 ${
+                                order.payment_status === 'paid' ? 'bg-emerald-50 text-emerald-700' :
+                                order.payment_status === 'refunded' ? 'bg-slate-100 text-slate-700' :
+                                'bg-orange-50 text-orange-700'
+                              }`}
+                            >
+                              <option value="unpaid">Unpaid</option>
+                              <option value="paid">Paid</option>
+                              <option value="refunded">Refunded</option>
+                            </select>
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center gap-2">
@@ -279,9 +303,19 @@ export default function Orders() {
                                     <div>
                                       <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">Order Info</h4>
                                       <div className="bg-white rounded-lg border border-neutral-100 px-4 py-3 space-y-2 text-sm text-neutral-700">
-                                        <div className="flex justify-between">
-                                          <span className="text-neutral-400">Payment</span>
+                                        <div className="flex justify-between items-center">
+                                          <span className="text-neutral-400">Payment Method</span>
                                           <span className="font-medium">{order.payment_method}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                          <span className="text-neutral-400">Payment Status</span>
+                                          <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                            order.payment_status === 'paid' ? 'bg-emerald-100 text-emerald-800' :
+                                            order.payment_status === 'refunded' ? 'bg-slate-100 text-slate-800' :
+                                            'bg-orange-100 text-orange-800'
+                                          }`}>
+                                            {order.payment_status ? order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1) : 'Unpaid'}
+                                          </span>
                                         </div>
                                         <div className="flex justify-between">
                                           <span className="text-neutral-400">Status</span>

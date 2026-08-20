@@ -19,6 +19,7 @@ export interface Order {
   address: string | null;
   total_amount: number;
   payment_method: string;
+  payment_status: 'unpaid' | 'paid' | 'refunded';
   status: string;
   tracking_number: string | null;
   courier: string | null;
@@ -110,6 +111,15 @@ export function useOrders(searchQuery: string | null = null) {
     if (error) throw error;
   };
 
-  return { orders, loading, updateOrderStatus, updateTracking, fetchOrderItems, refetch: fetchOrders };
+  const updatePaymentStatus = async (id: string, newPaymentStatus: string) => {
+    const { error } = await supabase
+      .from('orders')
+      .update({ payment_status: newPaymentStatus })
+      .eq('id', id);
+    
+    if (error) throw error;
+  };
+
+  return { orders, loading, updateOrderStatus, updateTracking, updatePaymentStatus, fetchOrderItems, refetch: fetchOrders };
 }
 
