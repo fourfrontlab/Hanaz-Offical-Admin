@@ -16,8 +16,14 @@ export interface Product {
   is_bestseller: boolean;
   in_stock: boolean;
   stock_quantity: number;
+  is_active: boolean;
   created_at: string;
 }
+
+// Describes the outcome of a smart delete operation
+export type DeleteResult =
+  | { action: 'hard_deleted' }
+  | { action: 'soft_deleted' };
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,6 +34,7 @@ export function useProducts() {
     const { data, error } = await supabase
       .from('products')
       .select('*')
+      .eq('is_active', true)          // admin list also hides deactivated products
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -84,14 +91,58 @@ export function useProducts() {
     return data;
   };
 
-  const deleteProduct = async (id: string) => {
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id);
+  /**
+   * Smart delete:
+   * - If the product has NO order history → hard-delete (removes the row entirely).
+   * - If the product HAS order history    → soft-delete (sets is_active = false).
+   *   The product is removed from all listings but its row remains for FK integrity.
+   *
+   * Returns a DeleteResult so the caller can show an appropriate toast.
+   */
+  const deleteProduct = async (id: string): Promise<DeleteResult> => {
+    // 1. Check whether this product appears in any order_items row
+    const { count, error: countError } = await supabase
+      .from('order_items')
+      .select('id', { count: 'exact', head: true })
+      .eq('product_id', id);
 
-    if (error) throw error;
-    setProducts(products.filter((p) => p.id !== id));
+    if (countError) {
+      console.error('deleteProduct – order_items check failed:', countError);
+      throw countError;
+    }
+
+    const hasOrderHistory = (count ?? 0) > 0;
+
+    if (!hasOrderHistory) {
+      // 2a. Safe to hard-delete — no FK references
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('deleteProduct – hard delete failed:', error);
+        throw error;
+      }
+
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      return { action: 'hard_deleted' };
+    } else {
+      // 2b. Has order history — soft-delete instead
+      const { error } = await supabase
+        .from('products')
+        .update({ is_active: false })
+        .eq('id', id);
+
+      if (error) {
+        console.error('deleteProduct – soft delete failed:', error);
+        throw error;
+      }
+
+      // Remove from local list (it's no longer active)
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      return { action: 'soft_deleted' };
+    }
   };
 
   return {

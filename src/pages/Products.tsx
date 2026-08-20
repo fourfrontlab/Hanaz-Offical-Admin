@@ -20,12 +20,18 @@ export default function Products() {
   };
 
   const handleDelete = async (id: string, title: string) => {
-    if (window.confirm(`Are you sure you want to delete ${title}?`)) {
+    if (window.confirm(`Are you sure you want to remove "${title}"?\n\nIf this product has order history it will be deactivated (hidden from all listings) instead of permanently deleted.`)) {
       try {
-        await deleteProduct(id);
-        toast.success(`${title} deleted successfully.`);
-      } catch (error) {
-        toast.error('Failed to delete product.');
+        const result = await deleteProduct(id);
+        if (result.action === 'hard_deleted') {
+          toast.success(`"${title}" deleted permanently.`);
+        } else {
+          toast.success(`"${title}" has been deactivated — it had existing orders so it was hidden instead of deleted.`, { duration: 5000 });
+        }
+      } catch (error: unknown) {
+        const msg = (error as { message?: string })?.message ?? 'Unknown error';
+        console.error('handleDelete error:', error);
+        toast.error(`Failed to remove product: ${msg}`);
       }
     }
   };
