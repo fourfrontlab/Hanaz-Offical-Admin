@@ -14,7 +14,7 @@ export interface Order {
   id: string;
   order_number: string;
   customer_name: string;
-  phone: string;
+  phone: string | null;
   email: string | null;
   address: string | null;
   total_amount: number;

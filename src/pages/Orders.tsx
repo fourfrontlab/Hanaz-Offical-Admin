@@ -148,7 +148,7 @@ export default function Orders() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-sm font-medium text-neutral-900">{order.customer_name}</div>
-                          <div className="text-sm text-neutral-500">{order.phone}</div>
+                          <div className="text-sm text-neutral-500">{order.phone || 'N/A'}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                           {itemCount} {itemCount === 1 ? 'item' : 'items'}
@@ -282,15 +282,15 @@ export default function Orders() {
                                       <div className="bg-white rounded-lg border border-neutral-100 px-4 py-3 space-y-2">
                                         <div className="flex items-center gap-2 text-sm text-neutral-700">
                                           <User size={13} className="text-neutral-400 flex-shrink-0" />
-                                          {order.customer_name}
+                                          <span>{order.customer_name || 'N/A'}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm text-neutral-700">
                                           <Phone size={13} className="text-neutral-400 flex-shrink-0" />
-                                          {order.phone}
+                                          <span>{order.phone || <span className="text-neutral-400 italic">N/A</span>}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-sm text-neutral-700">
                                           <Mail size={13} className="text-neutral-400 flex-shrink-0" />
-                                          {order.email || <span className="text-neutral-400 italic">Not provided</span>}
+                                          <span>{order.email || <span className="text-neutral-400 italic">Not provided</span>}</span>
                                         </div>
                                         {order.address && (
                                           <div className="flex items-start gap-2 text-sm text-neutral-700">

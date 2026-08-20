@@ -10,6 +10,15 @@ export interface DashboardStats {
   totalOrders: number;
 }
 
+export interface RawOrder {
+  status: string;
+  total_amount: number;
+  net_profit: number;
+  payment_method: string;
+  payment_status: string;
+  created_at: string;
+}
+
 export function useDashboardStats() {
   const { dateRange } = useFilter();
   const [stats, setStats] = useState<DashboardStats>({
@@ -19,13 +28,14 @@ export function useDashboardStats() {
     returnRate: 0,
     totalOrders: 0,
   });
+  const [rawOrders, setRawOrders] = useState<RawOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchStats = async () => {
     setLoading(true);
     let query = supabase
       .from('orders')
-      .select('status, total_amount, net_profit, payment_method, payment_status');
+      .select('status, total_amount, net_profit, payment_method, payment_status, created_at');
 
     if (dateRange.startDate) {
       query = query.gte('created_at', dateRange.startDate.toISOString());
@@ -43,6 +53,7 @@ export function useDashboardStats() {
     }
 
     if (orders) {
+      setRawOrders(orders as RawOrder[]);
       let grossSales = 0;
       let netProfit = 0;
       let pendingCod = 0;
@@ -115,5 +126,5 @@ export function useDashboardStats() {
     };
   }, [dateRange]);
 
-  return { stats, loading, refetch: fetchStats };
+  return { stats, rawOrders, loading, refetch: fetchStats };
 }

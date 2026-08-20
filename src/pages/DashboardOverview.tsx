@@ -1,8 +1,11 @@
 import { useDashboardStats } from '../hooks/useDashboardStats';
+import { useFilter } from '../context/FilterContext';
+import DashboardCharts from '../components/DashboardCharts';
 import { Loader2 } from 'lucide-react';
 
 export default function DashboardOverview() {
-  const { stats, loading } = useDashboardStats();
+  const { stats, rawOrders, loading } = useDashboardStats();
+  const { dateRange } = useFilter();
 
   // Format currency
   const formatCurrency = (val: number) => 
@@ -43,10 +46,13 @@ export default function DashboardOverview() {
           </div>
         </div>
       )}
-      
-      <div className="bg-white rounded-xl border border-neutral-200 shadow-sm min-h-[400px] flex items-center justify-center text-neutral-400">
-        Chart / Data Grid Area
-      </div>
+
+      {/* Charts — share the same rawOrders dataset and dateRange from useDashboardStats */}
+      <DashboardCharts
+        rawOrders={rawOrders}
+        loading={loading}
+        rangeLabel={dateRange.label}
+      />
     </div>
   );
 }
