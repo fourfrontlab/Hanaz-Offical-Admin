@@ -50,9 +50,14 @@ export function useDashboardStats() {
       const totalOrders = orders.length;
 
       for (const order of orders) {
-        const isCancelled = order.status === 'Cancelled';
-        const isRefunded = order.payment_status === 'refunded';
-        const isReturned = order.status === 'Returned';
+        // Safely extract and lowercase values for robust comparison
+        const status = String(order.status || '').toLowerCase();
+        const paymentStatus = String(order.payment_status || 'unpaid').toLowerCase(); // default to unpaid if null
+        const paymentMethod = String(order.payment_method || '').toLowerCase();
+
+        const isCancelled = status === 'cancelled';
+        const isRefunded = paymentStatus === 'refunded';
+        const isReturned = status === 'returned';
 
         // Gross Sales & Net Profit (exclude cancelled and refunded)
         if (!isCancelled && !isRefunded) {
@@ -60,12 +65,11 @@ export function useDashboardStats() {
           netProfit += Number(order.net_profit) || 0;
         }
 
-        // Pending COD (COD, unpaid, not cancelled/returned)
+        // Pending COD (COD, unpaid/pending, not cancelled)
         if (
-          order.payment_method === 'COD' &&
-          order.payment_status === 'unpaid' &&
-          !isCancelled && 
-          !isReturned
+          paymentMethod === 'cod' &&
+          (paymentStatus === 'unpaid' || paymentStatus === 'pending') &&
+          !isCancelled
         ) {
           pendingCod += Number(order.total_amount) || 0;
         }

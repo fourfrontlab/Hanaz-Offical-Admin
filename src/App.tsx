@@ -38,7 +38,7 @@ function App() {
         <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
         <Routes>
           <Route path="/login" element={<Login />} />
-          
+
           {/* Protected Dashboard Routes */}
           <Route element={<AuthGuard />}>
             <Route path="/" element={<DashboardOverview />} />
