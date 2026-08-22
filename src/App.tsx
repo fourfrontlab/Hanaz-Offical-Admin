@@ -10,6 +10,7 @@ import Products from './pages/Products';
 import Orders from './pages/Orders';
 import Marketing from './pages/Marketing';
 import Settings from './pages/Settings';
+import Messages from './pages/Messages';
 
 function AuthGuard() {
   const { session, loading } = useAuth();
@@ -45,6 +46,7 @@ function App() {
             <Route path="/products" element={<Products />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/marketing" element={<Marketing />} />
+            <Route path="/messages" element={<Messages />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
         </Routes>
